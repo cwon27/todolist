@@ -45,7 +45,7 @@ const TodoItemBlock = styled.div`
   }
 `;
 
-//체크 버튼
+//체크 버튼 done이 true인지 false인지에 따라 스타일 변경
 const CheckCircle = styled.div<{ done: boolean }>`
   width: 32px;
   height: 32px;
@@ -65,7 +65,7 @@ const CheckCircle = styled.div<{ done: boolean }>`
     `}
 `;
 
-//내역 텍스트
+//내역 텍스트 done이 true인지 false인지에 따라 스타일 변경
 const Text = styled.div<{ done: boolean }>`
   flex: 1;
   font-size: 21px;
@@ -97,12 +97,12 @@ function TodoItem({
   //수정 input 상태 관리 -> 버튼 눌러서 input이 나왔냐 안나왔냐
   const [isEditing, setIsEditing] = useState(false);
 
-  //수정 버튼 클릭
+  //수정 버튼 클릭(list에서 보이는 수정 버튼튼)
   const editHandlerClick = () => {
     setIsEditing(true);
   };
 
-  //수정 버튼 클릭
+  //수정 하기 버튼 클릭(수정 버튼 누른 후 최종 수정 버튼)
   const editHandlerComplete = (editText: string) => {
     onUpdate(id, editText);
     setIsEditing(false);

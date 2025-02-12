@@ -16,9 +16,10 @@ const TodoTemplateBlock = styled.div`
 `;
 
 interface TodoTemplateProps {
-  children: React.ReactNode;
+  children: React.ReactNode; // children 타입을 React.ReactNode로 설정해서 Raect의 모든 요소를 받을 수 있게 함함
 }
 
+//TodoTemplate는 children을 props로 받아 내부에서 렌더링
 function TodoTemplate({ children }: TodoTemplateProps) {
   return <TodoTemplateBlock>{children}</TodoTemplateBlock>;
 }

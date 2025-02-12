@@ -11,6 +11,7 @@ const TodoStyle = createGlobalStyle`
   }
 `;
 
+//타입 -> typescript이기 때문에 써주기기
 export interface Todo {
   id: number;
   text: string;
@@ -19,6 +20,7 @@ export interface Todo {
   date: string;
 }
 
+//더미데이터 -> 예시로 사용
 const dummyData: Todo[] = [
   {
     id: 0,
@@ -42,26 +44,28 @@ const dummyData: Todo[] = [
 ];
 
 function Chaewon() {
-  //할일 내역
+  //할일 내역 상태 관리리
+  //todos의 타입은 Todo[]이고 저장된 내역이 있으면 그걸로 초기화 없으면 더미로 초기화
   const [todos, setTodos] = useState<Todo[]>(() => {
     const savedTodos = localStorage.getItem("todos");
     if (savedTodos) {
-      //로컬에 저장된 할일 내역이 있는 경우
+      //localStorage에서 데이터 불러옴
       return JSON.parse(savedTodos);
     }
-    //없는 경우 -> 더미? 아예 안나오게 고민고민
+    //데이터 없는 경우 -> 더미 나오게 -> 지울까 생각중
     return dummyData;
   });
 
   //다음 아이디가 될 값
   const nextId = useRef<number>(todos.length);
 
-  //localStorage에 내역 저장
+  //useEffect : React component가 렌더링 될 때마다 특정 작업을 실행할 수 있도록 하는 리액트 hook
+  //따라서 todos가 변경될 때마다 localStorage에 자동 저장. 새로고침 해도 데이터 유지지
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  //날짜 선택 상태 관리 -> 초기값은 오늘 날짜
+  //날짜 선택 상태 관리 -> 초기화값은 오늘 날짜
   const [selectDate, setSelectDate] = useState<Date>(new Date());
 
   //내역 추가(Create)
@@ -70,16 +74,18 @@ function Chaewon() {
       id: nextId.current,
       text: text,
       done: false,
-      date: selectDate.toISOString().split("T")[0],
+      date: selectDate.toISOString().split("T")[0], //선택한 날짜로 저장장
     };
 
     //이전값 보정을 위해 setTodos([newTodo, ...todos]); 말고 아래처럼 작성
+    //기존에 있던 값에 새로운 값을 추가해야 하기 때문문
     setTodos((prevTodos) => [newTodo, ...prevTodos]);
-    //id값 1증가 -> 중복 X
+    //id값 1증가 -> id값 중복 X
     nextId.current += 1;
   };
 
   //내역 완료 toggle
+  //id가 일치하는 내역을 찾아서 done 상태를 true <-> false로 토클클
   const doneToggle = (id: number) => {
     setTodos((prevTodos) =>
       prevTodos.map((todo) =>
@@ -91,6 +97,7 @@ function Chaewon() {
   //내역 삭제(Delete)
   const onRemove = (id: number) => {
     //filter : 원본 배열을 변경하지 않고 새로운 배열을 만들어 반환 -> 상태 업데이트 가능
+    //삭제할 일을 제외한 새로운 배열을 생성 -> 삭제 내역만 없어짐짐
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
   };
 
@@ -103,7 +110,8 @@ function Chaewon() {
     );
   };
 
-  //날짜에 맞는 내역만 나오게
+  //캘린더에서 선택한 날짜에 맞는 내역
+  //todos에서 현재 selectDate랑 동일한 날짜의 내역만 필터링링
   const filterTodos = todos.filter(
     (todo) => todo.date == selectDate.toISOString().split("T")[0]
   );

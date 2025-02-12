@@ -33,15 +33,16 @@ const TodoHeadBlock = styled.div`
 
 interface TodoHeadProps {
   todos: Todo[];
+  //const [selectDate, setSelectDate] = useState<Date>(new Date()); 였으니까 아래처럼 타입 선언언
   selectDate: Date;
   setSelectDate: (date: Date) => void;
 }
 
 function TodoHead({ todos, selectDate, setSelectDate }: TodoHeadProps) {
   //캘린더 나와있는지 상태 관리
-  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
-  //날짜
+  //날짜 format
   const week = [
     "일요일",
     "월요일",
@@ -56,7 +57,7 @@ function TodoHead({ todos, selectDate, setSelectDate }: TodoHeadProps) {
     selectDate.getMonth() + 1
   }월 ${selectDate.getDate()}일 ${dayWeek}`;
 
-  //할일 몇개 남은지 확인
+  //할일 몇개 남은지 확인 : done이 false인 요소 필터링 해서 개수 셈
   const unDone = todos.filter((todo) => !todo.done);
 
   //캘린더 열고 닫기
