@@ -4,6 +4,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../css/calendar.css";
 import { useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  calendarOpenState,
+  selectDateState,
+  todosState,
+} from "@/store/text.atom";
 
 const TodoHeadBlock = styled.div`
   padding: 48px 32px 24px;
@@ -33,14 +39,15 @@ const TodoHeadBlock = styled.div`
 
 interface TodoHeadProps {
   todos: Todo[];
-  //const [selectDate, setSelectDate] = useState<Date>(new Date()); 였으니까 아래처럼 타입 선언언
-  selectDate: Date;
   setSelectDate: (date: Date) => void;
 }
 
-function TodoHead({ todos, selectDate, setSelectDate }: TodoHeadProps) {
+function TodoHead({ todos, setSelectDate }: TodoHeadProps) {
+  //Recoil에서 관리하는 상태 관리
+  const selectDate = useRecoilValue(selectDateState);
+
   //캘린더 나와있는지 상태 관리
-  const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
+  const [calendarOpen, setCalendarOpen] = useRecoilState(calendarOpenState);
 
   //날짜 format
   const week = [

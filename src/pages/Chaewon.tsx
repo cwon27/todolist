@@ -1,9 +1,13 @@
+import { useEffect, useRef } from "react";
+import { useRecoilState } from "recoil";
+import { selectDateState, todosState } from "@/store/text.atom";
 import { createGlobalStyle } from "styled-components";
 import TodoTemplate from "../components/chaewon/TodoTemplate";
 import TodoHead from "../components/chaewon/TodoHead";
 import TodoList from "../components/chaewon/TodoList";
 import TodoCreate from "../components/chaewon/TodoCreate";
-import { useEffect, useRef, useState } from "react";
+
+//import 순서 : react(useEffect같은거) -> reaact주변(DOM같은거) -> 서드파티(캘린더같은거거) -> 커스텀 컴포넌트 -> hooks -> css
 
 const TodoStyle = createGlobalStyle`
   body{
@@ -20,43 +24,15 @@ export interface Todo {
   date: string;
 }
 
-//더미데이터 -> 예시로 사용
-const dummyData: Todo[] = [
-  {
-    id: 0,
-    text: "React Todo list 완성하기",
-    done: false,
-    //오늘 날짜
-    date: new Date().toISOString().split("T")[0],
-  },
-  {
-    id: 1,
-    text: "신입사원 교육 문제 다 풀기",
-    done: false,
-    date: new Date().toISOString().split("T")[0],
-  },
-  {
-    id: 2,
-    text: "React로 게시판 만들기",
-    done: false,
-    date: new Date().toISOString().split("T")[0],
-  },
-];
-
 function Chaewon() {
   //할일 내역 상태 관리리
-  //todos의 타입은 Todo[]이고 저장된 내역이 있으면 그걸로 초기화 없으면 더미로 초기화
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    const savedTodos = localStorage.getItem("todos");
-    if (savedTodos) {
-      //localStorage에서 데이터 불러옴
-      return JSON.parse(savedTodos);
-    }
-    //데이터 없는 경우 -> 더미 나오게 -> 지울까 생각중
-    return dummyData;
-  });
+  //todos의 타입은 Todo[]이고 저장된 내역이 있으면 그걸로 초기화 없으면 빈배열로 초기화
+  const [todos, setTodos] = useRecoilState(todosState);
 
-  //다음 아이디가 될 값
+  //날짜 선택 상태 관리 -> 초기화값은 오늘 날짜
+  const [selectDate, setSelectDate] = useRecoilState(selectDateState);
+
+  //다음 아이디가 될 값 -> id값이 렌더링되면서 초기화 되는 것을 방지하기 위해 useRef 사용
   const nextId = useRef<number>(todos.length);
 
   //useEffect : React component가 렌더링 될 때마다 특정 작업을 실행할 수 있도록 하는 리액트 hook
@@ -64,9 +40,6 @@ function Chaewon() {
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
-
-  //날짜 선택 상태 관리 -> 초기화값은 오늘 날짜
-  const [selectDate, setSelectDate] = useState<Date>(new Date());
 
   //내역 추가(Create)
   const onCreate = (text: string) => {
@@ -120,11 +93,7 @@ function Chaewon() {
     <>
       <TodoStyle />
       <TodoTemplate>
-        <TodoHead
-          todos={filterTodos}
-          selectDate={selectDate}
-          setSelectDate={setSelectDate}
-        />
+        <TodoHead todos={filterTodos} setSelectDate={setSelectDate} />
         <TodoList
           todos={filterTodos}
           doneToggle={doneToggle}
